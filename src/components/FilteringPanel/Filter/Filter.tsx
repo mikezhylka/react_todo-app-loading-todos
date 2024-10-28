@@ -1,38 +1,60 @@
-import React, { SetStateAction } from 'react';
+import classNames from 'classnames';
+import React, { SetStateAction, useState } from 'react';
+import { Filter as FilterType } from '../../../types/Filter';
 import { Todo } from '../../../types/Todo';
 import { filterTodos } from '../../../utils/filterTodos';
 
 type FilterProps = {
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  setSortedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
 };
 
-export const Filter: React.FC<FilterProps> = ({ setTodos }) => (
-  <nav className="filter" data-cy="Filter">
-    <a
-      href="#/"
-      className="filter__link selected"
-      data-cy="FilterLinkAll"
-      onClick={() => filterTodos('all', setTodos)}
-    >
-      All
-    </a>
+export const Filter: React.FC<FilterProps> = ({ setSortedTodos, todos }) => {
+  const [selectedLink, setSelectedLink] = useState<FilterType>('all');
 
-    <a
-      href="#/active"
-      className="filter__link"
-      data-cy="FilterLinkActive"
-      onClick={() => filterTodos('active', setTodos)}
-    >
-      Active
-    </a>
+  return (
+    <nav className="filter" data-cy="Filter">
+      <a
+        href="#/"
+        className={classNames('filter__link', {
+          selected: selectedLink === 'all',
+        })}
+        data-cy="FilterLinkAll"
+        onClick={() => {
+          setSelectedLink('all');
+          filterTodos('all', setSortedTodos, todos);
+        }}
+      >
+        All
+      </a>
 
-    <a
-      href="#/completed"
-      className="filter__link"
-      data-cy="FilterLinkCompleted"
-      onClick={() => filterTodos('completed', setTodos)}
-    >
-      Completed
-    </a>
-  </nav>
-);
+      <a
+        href="#/active"
+        className={classNames('filter__link', {
+          selected: selectedLink === 'active',
+        })}
+        data-cy="FilterLinkActive"
+        onClick={() => {
+          setSelectedLink('active');
+          filterTodos('active', setSortedTodos);
+        }}
+      >
+        Active
+      </a>
+
+      <a
+        href="#/completed"
+        className={classNames('filter__link', {
+          selected: selectedLink === 'completed',
+        })}
+        data-cy="FilterLinkCompleted"
+        onClick={() => {
+          setSelectedLink('completed');
+          filterTodos('completed', setSortedTodos);
+        }}
+      >
+        Completed
+      </a>
+    </nav>
+  );
+};

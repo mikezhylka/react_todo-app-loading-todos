@@ -18,7 +18,7 @@ export const FilteringPanel: React.FC<FilteringPanelProps> = ({
   <footer className="todoapp__filtering-panel" data-cy="Footer">
     <TodosLeft todos={todos} />
 
-    <Filter setSortedTodos={setSortedTodos} />
+    <Filter setSortedTodos={setSortedTodos} todos={todos} />
 
     <ClearCompletedButton todos={todos} setTodos={setTodos} />
   </footer>

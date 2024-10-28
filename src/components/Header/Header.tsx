@@ -16,10 +16,6 @@ export const Header: React.FC<HeaderProps> = ({
   todos,
   setTodos,
 }) => {
-  // useEffect(() => {
-  //   setShowedTodos(changedTodos);
-  // }, [changedTodos, setShowedTodos]);
-
   return (
     <header className="todoapp__header">
       <ToggleAllButton todos={todos} setTodos={setTodos} />

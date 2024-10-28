@@ -12,8 +12,7 @@ import { UserWarning } from './UserWarning';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState<string>(''); // for new todo title
-  // const [sortBy, setSortBy] = useState<Filter>('all');
-  const [sortedTodos, setSortedTodos] = useState<Todo[]>([]);
+  const [sortedTodos, setSortedTodos] = useState<Todo[]>(todos);
 
   useEffect(() => {
     getTodos().then(setTodos);

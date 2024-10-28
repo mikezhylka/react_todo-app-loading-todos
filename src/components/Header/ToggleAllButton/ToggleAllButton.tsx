@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { SetStateAction } from 'react';
 import { Todo } from '../../../types/Todo';
 import { toggleAllTodos } from '../../../utils/todoHandlers';
@@ -13,7 +14,9 @@ export const ToggleAllButton: React.FC<ToggleAllButtonProps> = ({
 }) => (
   <button
     type="button"
-    className="todoapp__toggle-all active"
+    className={classNames('todoapp__toggle-all', {
+      active: todos.every(todo => todo.completed),
+    })}
     data-cy="ToggleAllButton"
     onClick={() => {
       toggleAllTodos(todos, setTodos);
