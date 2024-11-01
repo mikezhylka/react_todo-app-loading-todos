@@ -1,6 +1,6 @@
 import React, { SetStateAction } from 'react';
 import { Todo } from '../../../types/Todo';
-import { clearCompleted } from '../../../utils/todoHandlers';
+import { removeCompletedTodos } from '../../../utils/todoHandlers';
 
 type ClearCompletedButtonProps = {
   renderedTodos: Todo[];
@@ -16,7 +16,7 @@ export const ClearCompletedButton: React.FC<ClearCompletedButtonProps> = ({
     type="button"
     className="todoapp__clear-completed"
     data-cy="ClearCompletedButton"
-    onClick={() => clearCompleted(setRenderedTodos, setInitialTodos)}
+    onClick={() => removeCompletedTodos(setRenderedTodos, setInitialTodos)}
   >
     Clear completed
   </button>

@@ -2,11 +2,11 @@ import classNames from 'classnames';
 import React, { SetStateAction, useState } from 'react';
 import { Todo } from '../../../types/Todo';
 import {
-  onTodoRenameKeyDown,
-  toggleCompleted,
+  onEnterRenameTodo,
+  toggleTodoCompletion,
 } from '../../../utils/todoHandlers';
 
-import { deleteTodo } from '../../../utils/todoHandlers';
+import { removeTodo } from '../../../utils/todoHandlers';
 
 type TodoProps = {
   todo: Todo;
@@ -37,7 +37,7 @@ export const TodoItem: React.FC<TodoProps> = ({
       <label
         className="todo__status-label"
         aria-label="Toggle todo status"
-        onChange={() => toggleCompleted(todo.id, setRenderedTodos)}
+        onChange={() => toggleTodoCompletion(todo.id, setRenderedTodos)}
       >
         <input
           data-cy="TodoStatus"
@@ -56,7 +56,7 @@ export const TodoItem: React.FC<TodoProps> = ({
             value={todoQuery}
             onBlur={() => setIsEdited(false)}
             onKeyDown={event =>
-              onTodoRenameKeyDown(
+              onEnterRenameTodo(
                 todo,
                 event,
                 todoQuery,
@@ -82,7 +82,7 @@ export const TodoItem: React.FC<TodoProps> = ({
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => deleteTodo(setRenderedTodos, setInitialTodos, todo.id)}
+          onClick={() => removeTodo(setRenderedTodos, setInitialTodos, todo.id)}
         >
           ×
         </button>

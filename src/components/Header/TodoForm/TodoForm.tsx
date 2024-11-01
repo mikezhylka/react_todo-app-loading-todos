@@ -1,7 +1,7 @@
 import React, { SetStateAction } from 'react';
 import { CustomError } from '../../../types/Error';
 import { Todo } from '../../../types/Todo';
-import { handleKeyDown } from '../../../utils/todoHandlers';
+import { onEnterAddTodo } from '../../../utils/todoHandlers';
 
 type TodoFormProps = {
   query: string;
@@ -21,7 +21,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({
   setErrorMessage,
 }) => {
   return (
-    <form name="todoForm">
+    <form name="todoForm" onSubmit={e => e.preventDefault()}>
       <input
         data-cy="NewTodoField"
         type="text"
@@ -29,7 +29,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({
         placeholder="What needs to be done?"
         value={query}
         onKeyDown={event =>
-          handleKeyDown(
+          onEnterAddTodo(
             event,
             query,
             setQuery,

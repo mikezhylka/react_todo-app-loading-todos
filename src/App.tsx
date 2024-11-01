@@ -48,15 +48,22 @@ export const App: React.FC = () => {
           setInitialTodos={setInitialTodos}
         />
 
-        <FilteringPanel
-          renderedTodos={renderedTodos}
-          setRenderedTodos={setRenderedTodos}
-          initialTodos={initialTodos}
-          setInitialTodos={setInitialTodos}
-        />
+        {initialTodos.length > 0 && (
+          <FilteringPanel
+            renderedTodos={renderedTodos}
+            setRenderedTodos={setRenderedTodos}
+            initialTodos={initialTodos}
+            setInitialTodos={setInitialTodos}
+          />
+        )}
       </div>
 
-      {errorMessage && <ErrorNotification errorMessage={errorMessage} />}
+      {errorMessage && (
+        <ErrorNotification
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
+      )}
     </div>
   );
 };

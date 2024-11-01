@@ -4,17 +4,25 @@ import * as todoService from '../services/todo';
 import { CustomError } from '../types/Error';
 import { Todo } from '../types/Todo';
 
-export const deleteTodo = (
+const generateNextTodoId = (todos: Todo[]): number => {
+  return Math.max(...todos.map(todo => todo.id), 0) + 1;
+};
+
+export const removeTodo = async (
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
   todoId: number,
 ) => {
+  await todoService.deleteTodo(todoId);
+
+  // eslint-disable-next-line no-console
+  console.log(todoId);
+
   setRenderedTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
   setInitialTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
-  todoService.deleteTodo(todoId);
 };
 
-export const handleKeyDown = async (
+export const onEnterAddTodo = async (
   event: React.KeyboardEvent<HTMLInputElement>,
   query: string,
   setQuery: React.Dispatch<SetStateAction<string>>,
@@ -23,18 +31,21 @@ export const handleKeyDown = async (
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
 ) => {
-  if (event.key === 'Enter' && query.trim() !== '') {
-    const newId = Math.max(...initialTodos.map(todo => todo.id), 0) + 1;
+  if (event.key === 'Enter') {
+    if (!query.trim()) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
 
     const newTodo: Todo = {
-      id: newId,
+      id: generateNextTodoId(initialTodos),
       userId: USER_ID,
       title: query.trim(),
       completed: false,
     };
 
     try {
-      console.log(newTodo);
       await todoService.createTodo(newTodo);
       setRenderedTodos(prevTodos => [...prevTodos, newTodo]);
       setInitialTodos(prevTodos => [...prevTodos, newTodo]);
@@ -45,7 +56,7 @@ export const handleKeyDown = async (
   }
 };
 
-export const onTodoRenameKeyDown = (
+export const onEnterRenameTodo = (
   todo: Todo,
   event: React.KeyboardEvent<HTMLInputElement>,
   query: string,
@@ -75,7 +86,7 @@ export const onTodoRenameKeyDown = (
   }
 };
 
-export const toggleCompleted = (
+export const toggleTodoCompletion = (
   id: number,
   setTodos: React.Dispatch<SetStateAction<Todo[]>>,
 ) => {
@@ -101,7 +112,7 @@ export const toggleCompleted = (
   todoService.changeCompletedStatus(changedTodo);
 };
 
-export const toggleAllTodos = (
+export const toggleAllTodosCompletion = (
   renderedTodos: Todo[],
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
@@ -147,20 +158,21 @@ export const toggleAllTodos = (
   }
 };
 
-export const clearCompleted = (
+export const removeCompletedTodos = async (
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
 ) => {
-  setRenderedTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-  setInitialTodos(prevTodos =>
-    prevTodos.filter(todo => {
-      if (todo.completed) {
-        todoService.deleteTodo(todo.id);
+  const completedTodos: Todo[] = [];
 
-        return false;
-      }
+  setRenderedTodos(prevTodos => {
+    completedTodos.push(...prevTodos.filter(todo => todo.completed));
 
-      return true;
-    }),
+    return prevTodos.filter(todo => !todo.completed);
+  });
+
+  await Promise.all(
+    completedTodos.map(todo => todoService.deleteTodo(todo.id)),
   );
+
+  setInitialTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
 };
