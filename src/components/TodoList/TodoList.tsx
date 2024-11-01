@@ -3,31 +3,36 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from './TodoItem';
 
 type TodoListProps = {
-  todos: Todo[];
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  sortedTodos: Todo[];
+  renderedTodos: Todo[];
+  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  initialTodos: Todo[];
+  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
-  todos,
-  setTodos,
-  sortedTodos,
+  renderedTodos,
+  setRenderedTodos,
+  initialTodos,
+  setInitialTodos,
 }) => {
-  const [renderedTodos, setRenderedTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('rerendered');
-
-    return sortedTodos && sortedTodos.length > 0
-      ? setRenderedTodos(sortedTodos)
-      : setRenderedTodos(todos);
-  }, [sortedTodos, todos]);
+    return renderedTodos !== initialTodos
+      ? setTodos(renderedTodos)
+      : setTodos(initialTodos);
+  }, [renderedTodos, initialTodos]);
 
   return (
     <section className="todoapp__todo-list" data-cy="TodoList">
-      {renderedTodos.map(todo => (
-        <TodoItem todo={todo} setTodos={setTodos} key={todo.id} />
+      {todos.map(todo => (
+        <TodoItem
+          todo={todo}
+          setRenderedTodos={setRenderedTodos}
+          key={todo.id}
+          renderedTodos={renderedTodos}
+          setInitialTodos={setInitialTodos}
+        />
       ))}
     </section>
   );

@@ -5,21 +5,31 @@ import { Filter } from './Filter';
 import { TodosLeft } from './TodosLeft';
 
 type FilteringPanelProps = {
-  todos: Todo[];
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setSortedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  initialTodos: Todo[];
+  renderedTodos: Todo[];
+  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
 };
 
 export const FilteringPanel: React.FC<FilteringPanelProps> = ({
-  todos,
-  setTodos,
-  setSortedTodos,
+  initialTodos,
+  renderedTodos,
+  setRenderedTodos,
+  setInitialTodos,
 }) => (
   <footer className="todoapp__filtering-panel" data-cy="Footer">
-    <TodosLeft todos={todos} />
+    <TodosLeft renderedTodos={renderedTodos} />
 
-    <Filter setSortedTodos={setSortedTodos} todos={todos} />
+    <Filter
+      initialTodos={initialTodos}
+      setRenderedTodos={setRenderedTodos}
+      renderedTodos={renderedTodos}
+    />
 
-    <ClearCompletedButton todos={todos} setTodos={setTodos} />
+    <ClearCompletedButton
+      renderedTodos={renderedTodos}
+      setRenderedTodos={setRenderedTodos}
+      setInitialTodos={setInitialTodos}
+    />
   </footer>
 );

@@ -1,21 +1,18 @@
 import React from 'react';
+import { CustomError } from '../../types/Error';
 
-type ErrorNotificationProps = {};
+type ErrorNotificationProps = {
+  errorMessage: CustomError;
+};
 
-export const ErrorNotification: React.FC<ErrorNotificationProps> = ({}) => (
+export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
+  errorMessage,
+}) => (
   <div
     data-cy="ErrorNotification"
     className="notification is-danger is-light has-text-weight-normal"
   >
     <button data-cy="HideErrorButton" type="button" className="delete" />
-    Unable to load todos
-    <br />
-    Title should not be empty
-    <br />
-    Unable to add a todo
-    <br />
-    Unable to delete a todo
-    <br />
-    Unable to update a todo
+    {errorMessage}
   </div>
 );

@@ -5,11 +5,16 @@ import { Todo } from '../../../types/Todo';
 import { filterTodos } from '../../../utils/filterTodos';
 
 type FilterProps = {
-  setSortedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  todos: Todo[];
+  initialTodos: Todo[];
+  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  renderedTodos: Todo[];
 };
 
-export const Filter: React.FC<FilterProps> = ({ setSortedTodos, todos }) => {
+export const Filter: React.FC<FilterProps> = ({
+  initialTodos,
+  setRenderedTodos,
+  // renderedTodos,
+}) => {
   const [selectedLink, setSelectedLink] = useState<FilterType>('all');
 
   return (
@@ -22,7 +27,7 @@ export const Filter: React.FC<FilterProps> = ({ setSortedTodos, todos }) => {
         data-cy="FilterLinkAll"
         onClick={() => {
           setSelectedLink('all');
-          filterTodos('all', setSortedTodos, todos);
+          filterTodos('all', setRenderedTodos, initialTodos);
         }}
       >
         All
@@ -36,7 +41,7 @@ export const Filter: React.FC<FilterProps> = ({ setSortedTodos, todos }) => {
         data-cy="FilterLinkActive"
         onClick={() => {
           setSelectedLink('active');
-          filterTodos('active', setSortedTodos);
+          filterTodos('active', setRenderedTodos, initialTodos);
         }}
       >
         Active
@@ -50,7 +55,7 @@ export const Filter: React.FC<FilterProps> = ({ setSortedTodos, todos }) => {
         data-cy="FilterLinkCompleted"
         onClick={() => {
           setSelectedLink('completed');
-          filterTodos('completed', setSortedTodos);
+          filterTodos('completed', setRenderedTodos, initialTodos);
         }}
       >
         Completed

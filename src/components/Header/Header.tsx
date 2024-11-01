@@ -1,4 +1,5 @@
 import React, { SetStateAction } from 'react';
+import { CustomError } from '../../types/Error';
 import { Todo } from '../../types/Todo';
 import { TodoForm } from './TodoForm';
 import { ToggleAllButton } from './ToggleAllButton';
@@ -6,25 +7,35 @@ import { ToggleAllButton } from './ToggleAllButton';
 type HeaderProps = {
   query: string;
   setQuery: React.Dispatch<SetStateAction<string>>;
-  todos: Todo[];
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  renderedTodos: Todo[];
+  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
 };
 
 export const Header: React.FC<HeaderProps> = ({
   query,
   setQuery,
-  todos,
-  setTodos,
+  renderedTodos,
+  setRenderedTodos,
+  setInitialTodos,
+  setErrorMessage,
 }) => {
   return (
     <header className="todoapp__header">
-      <ToggleAllButton todos={todos} setTodos={setTodos} />
+      <ToggleAllButton
+        renderedTodos={renderedTodos}
+        setRenderedTodos={setRenderedTodos}
+        setInitialTodos={setInitialTodos}
+      />
 
       <TodoForm
         query={query}
         setQuery={setQuery}
-        todos={todos}
-        setTodos={setTodos}
+        renderedTodos={renderedTodos}
+        setRenderedTodos={setRenderedTodos}
+        setInitialTodos={setInitialTodos}
+        setErrorMessage={setErrorMessage}
       />
     </header>
   );

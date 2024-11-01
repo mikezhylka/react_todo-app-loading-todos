@@ -1,20 +1,21 @@
-import React, { SetStateAction } from 'react';
+import { SetStateAction } from 'react';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 
 export const filterTodos = (
   filterType: Filter,
-  setSortedTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  todos?: Todo[],
+  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  initialTodos: Todo[],
 ) => {
   switch (filterType) {
     case 'active':
-      return todos && setSortedTodos(todos.filter(todo => !todo.completed));
-
+      setRenderedTodos(initialTodos.filter(todo => !todo.completed));
+      break;
     case 'completed':
-      return todos && setSortedTodos(todos.filter(todo => todo.completed));
-
+      setRenderedTodos(initialTodos.filter(todo => todo.completed));
+      break;
     default:
-      return todos && setSortedTodos(todos);
+      setRenderedTodos(initialTodos);
+      break;
   }
 };

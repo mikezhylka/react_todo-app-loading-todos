@@ -6,16 +6,21 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { FilteringPanel } from './components/FilteringPanel';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
+import { CustomError } from './types/Error';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [initialTodos, setInitialTodos] = useState<Todo[]>([]);
+  const [renderedTodos, setRenderedTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState<string>(''); // for new todo title
-  const [sortedTodos, setSortedTodos] = useState<Todo[]>(todos);
+  const [errorMessage, setErrorMessage] = useState<CustomError>('');
 
   useEffect(() => {
-    getTodos().then(setTodos);
+    getTodos().then(data => {
+      setRenderedTodos(data);
+      setInitialTodos(data);
+    });
   }, []);
 
   if (!USER_ID) {
@@ -24,26 +29,34 @@ export const App: React.FC = () => {
 
   return (
     <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+      <h1 className="todoapp__title">todo</h1>
 
       <div className="todoapp__content">
         <Header
           query={query}
           setQuery={setQuery}
-          todos={todos}
-          setTodos={setTodos}
+          renderedTodos={renderedTodos}
+          setRenderedTodos={setRenderedTodos}
+          setInitialTodos={setInitialTodos}
+          setErrorMessage={setErrorMessage}
         />
 
-        <TodoList todos={todos} setTodos={setTodos} sortedTodos={sortedTodos} />
+        <TodoList
+          renderedTodos={renderedTodos}
+          setRenderedTodos={setRenderedTodos}
+          initialTodos={initialTodos}
+          setInitialTodos={setInitialTodos}
+        />
 
         <FilteringPanel
-          todos={todos}
-          setTodos={setTodos}
-          setSortedTodos={setSortedTodos}
+          renderedTodos={renderedTodos}
+          setRenderedTodos={setRenderedTodos}
+          initialTodos={initialTodos}
+          setInitialTodos={setInitialTodos}
         />
       </div>
 
-      {false && <ErrorNotification />}
+      {errorMessage && <ErrorNotification errorMessage={errorMessage} />}
     </div>
   );
 };

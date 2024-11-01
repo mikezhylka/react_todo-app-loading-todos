@@ -2,11 +2,11 @@ import React from 'react';
 import { Todo } from '../../../types/Todo';
 
 type TodosLeftProps = {
-  todos: Todo[];
+  renderedTodos: Todo[];
 };
 
-export const TodosLeft: React.FC<TodosLeftProps> = ({ todos }) => (
+export const TodosLeft: React.FC<TodosLeftProps> = ({ renderedTodos }) => (
   <span className="todo-count" data-cy="TodosCounter">
-    {todos.filter(todo => !todo.completed).length} items left
+    {renderedTodos?.filter(todo => !todo.completed).length} items left
   </span>
 );
