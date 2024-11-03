@@ -7,6 +7,8 @@
 ## **Overview**
 This project is a simple Todo application that enables users to create, edit, and manage their tasks through an interactive interface. All actions are synced with an API to ensure persistent data storage and real-time updates.
 
+[**DEMO LINK**](https://mikezhylka.github.io/react_todo-app-with-api/)
+
 ## **Features**
 
 ### **1. Add a New Todo**
