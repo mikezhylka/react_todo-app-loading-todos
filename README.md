@@ -6,7 +6,7 @@
 
 # 🗒️ Overview
 This project is a simple Todo application that enables users to create, edit, and manage their tasks through an interactive interface. All actions are synced with an API to ensure persistent data storage and real-time updates.
-You can play this game [here](https://<your_account>.github.io/js_2048_game/)
+You can play this game [**here**](https://mikezhylka.github.io/js_2048_game/)
 
 # ✨ Features
 1. **➕ Add a New Todo**  
