@@ -1,7 +1,5 @@
 # **Todo App with API**
 
-![todo-app-picture-for-readme](https://github.com/user-attachments/assets/afdcbbfe-da10-4767-b07a-af8590309687)
-
 <p align="center">
   <img src="https://github.com/user-attachments/assets/afdcbbfe-da10-4767-b07a-af8590309687" alt="todo-app-picture-for-readme" />
 </p>
