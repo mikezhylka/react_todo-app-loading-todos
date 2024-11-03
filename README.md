@@ -1,4 +1,4 @@
-# **Todo App with API**
+# **Todo App with API ✅**
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/afdcbbfe-da10-4767-b07a-af8590309687" alt="todo-app-picture-for-readme" />
