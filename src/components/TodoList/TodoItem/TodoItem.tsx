@@ -6,6 +6,8 @@ import {
   toggleTodoCompletion,
 } from '../../../utils/todoHandlers';
 
+import { CustomError } from '../../../types/Error';
+import { LoadingTodo } from '../../../types/LoadingTodo';
 import { removeTodo } from '../../../utils/todoHandlers';
 
 type TodoProps = {
@@ -13,6 +15,10 @@ type TodoProps = {
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
   renderedTodos: Todo[];
+  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
+  loadingTodo: LoadingTodo;
+  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
+  loadingTodos: LoadingTodo[];
 };
 
 export const TodoItem: React.FC<TodoProps> = ({
@@ -20,6 +26,10 @@ export const TodoItem: React.FC<TodoProps> = ({
   setRenderedTodos,
   setInitialTodos,
   renderedTodos,
+  setErrorMessage,
+  loadingTodo,
+  setLoadingTodo,
+  loadingTodos,
 }) => {
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [todoQuery, setTodoQuery] = useState<string>(todo.title);
@@ -37,7 +47,15 @@ export const TodoItem: React.FC<TodoProps> = ({
       <label
         className="todo__status-label"
         aria-label="Toggle todo status"
-        onChange={() => toggleTodoCompletion(todo.id, setRenderedTodos)}
+        onChange={() =>
+          toggleTodoCompletion(
+            todo.id,
+            setRenderedTodos,
+            setInitialTodos,
+            setErrorMessage,
+            setLoadingTodo,
+          )
+        }
       >
         <input
           data-cy="TodoStatus"
@@ -48,7 +66,7 @@ export const TodoItem: React.FC<TodoProps> = ({
       </label>
 
       {isEdited ? (
-        <form name="todoForm">
+        <form name="todoForm" onSubmit={e => e.preventDefault()}>
           <input
             data-cy="NewTodoField"
             type="text"
@@ -65,6 +83,8 @@ export const TodoItem: React.FC<TodoProps> = ({
                 setRenderedTodos,
                 setInitialTodos,
                 setIsEdited,
+                setErrorMessage,
+                setLoadingTodo,
               )
             }
             onChange={event => setTodoQuery(event.target.value)}
@@ -82,13 +102,28 @@ export const TodoItem: React.FC<TodoProps> = ({
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => removeTodo(setRenderedTodos, setInitialTodos, todo.id)}
+          onClick={() =>
+            removeTodo(
+              setRenderedTodos,
+              setInitialTodos,
+              todo.id,
+              setErrorMessage,
+              setLoadingTodo,
+            )
+          }
         >
           ×
         </button>
       )}
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active':
+            loadingTodo?.id === todo.id ||
+            loadingTodos.find(t => t?.id === todo.id),
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

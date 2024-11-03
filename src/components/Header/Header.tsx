@@ -1,5 +1,6 @@
 import React, { SetStateAction } from 'react';
 import { CustomError } from '../../types/Error';
+import { LoadingTodo } from '../../types/LoadingTodo';
 import { Todo } from '../../types/Todo';
 import { TodoForm } from './TodoForm';
 import { ToggleAllButton } from './ToggleAllButton';
@@ -11,6 +12,8 @@ type HeaderProps = {
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
+  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
+  setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +23,8 @@ export const Header: React.FC<HeaderProps> = ({
   setRenderedTodos,
   setInitialTodos,
   setErrorMessage,
+  setLoadingTodo,
+  setLoadingTodos,
 }) => {
   return (
     <header className="todoapp__header">
@@ -27,6 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
         renderedTodos={renderedTodos}
         setRenderedTodos={setRenderedTodos}
         setInitialTodos={setInitialTodos}
+        setErrorMessage={setErrorMessage}
+        setLoadingTodos={setLoadingTodos}
       />
 
       <TodoForm
@@ -36,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
         setRenderedTodos={setRenderedTodos}
         setInitialTodos={setInitialTodos}
         setErrorMessage={setErrorMessage}
+        setLoadingTodo={setLoadingTodo}
       />
     </header>
   );

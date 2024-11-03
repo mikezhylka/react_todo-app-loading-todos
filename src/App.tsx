@@ -7,6 +7,7 @@ import { FilteringPanel } from './components/FilteringPanel';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { CustomError } from './types/Error';
+import { LoadingTodo } from './types/LoadingTodo';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
@@ -16,11 +17,18 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState<string>(''); // for new todo title
   const [errorMessage, setErrorMessage] = useState<CustomError>('');
 
+  const [loadingTodo, setLoadingTodo] = useState<LoadingTodo>(null);
+  const [loadingTodos, setLoadingTodos] = useState<LoadingTodo[]>([]);
+
   useEffect(() => {
-    getTodos().then(data => {
-      setRenderedTodos(data);
-      setInitialTodos(data);
-    });
+    getTodos()
+      .then(data => {
+        setRenderedTodos(data);
+        setInitialTodos(data);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+      });
   }, []);
 
   if (!USER_ID) {
@@ -39,6 +47,8 @@ export const App: React.FC = () => {
           setRenderedTodos={setRenderedTodos}
           setInitialTodos={setInitialTodos}
           setErrorMessage={setErrorMessage}
+          setLoadingTodo={setLoadingTodo}
+          setLoadingTodos={setLoadingTodos}
         />
 
         <TodoList
@@ -46,6 +56,10 @@ export const App: React.FC = () => {
           setRenderedTodos={setRenderedTodos}
           initialTodos={initialTodos}
           setInitialTodos={setInitialTodos}
+          setErrorMessage={setErrorMessage}
+          loadingTodo={loadingTodo}
+          setLoadingTodo={setLoadingTodo}
+          loadingTodos={loadingTodos}
         />
 
         {initialTodos.length > 0 && (
@@ -54,6 +68,8 @@ export const App: React.FC = () => {
             setRenderedTodos={setRenderedTodos}
             initialTodos={initialTodos}
             setInitialTodos={setInitialTodos}
+            setErrorMessage={setErrorMessage}
+            setLoadingTodos={setLoadingTodos}
           />
         )}
       </div>

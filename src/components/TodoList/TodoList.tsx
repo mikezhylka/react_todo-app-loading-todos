@@ -1,4 +1,6 @@
 import React, { SetStateAction, useEffect, useState } from 'react';
+import { CustomError } from '../../types/Error';
+import { LoadingTodo } from '../../types/LoadingTodo';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from './TodoItem';
 
@@ -7,6 +9,10 @@ type TodoListProps = {
   setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
   initialTodos: Todo[];
   setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
+  loadingTodo: LoadingTodo;
+  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
+  loadingTodos: LoadingTodo[];
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
@@ -14,6 +20,10 @@ export const TodoList: React.FC<TodoListProps> = ({
   setRenderedTodos,
   initialTodos,
   setInitialTodos,
+  setErrorMessage,
+  loadingTodo,
+  setLoadingTodo,
+  loadingTodos,
 }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
@@ -25,13 +35,17 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   return (
     <section className="todoapp__todo-list" data-cy="TodoList">
-      {todos.map(todo => (
+      {todos.map((todo, index) => (
         <TodoItem
           todo={todo}
           setRenderedTodos={setRenderedTodos}
-          key={todo.id}
+          key={index}
           renderedTodos={renderedTodos}
           setInitialTodos={setInitialTodos}
+          setErrorMessage={setErrorMessage}
+          loadingTodo={loadingTodo}
+          setLoadingTodo={setLoadingTodo}
+          loadingTodos={loadingTodos}
         />
       ))}
     </section>
