@@ -24,7 +24,7 @@ export const FilteringPanel: React.FC<FilteringPanelProps> = ({
   setLoadingTodos,
 }) => (
   <footer className="todoapp__filtering-panel" data-cy="Footer">
-    <TodosLeft renderedTodos={renderedTodos} />
+    <TodosLeft initialTodos={initialTodos} />
 
     <Filter
       initialTodos={initialTodos}

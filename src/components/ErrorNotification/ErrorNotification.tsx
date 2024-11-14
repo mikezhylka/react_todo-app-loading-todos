@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { SetStateAction } from 'react';
 import { CustomError } from '../../types/Error';
 
@@ -17,7 +18,10 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
   return (
     <div
       data-cy="ErrorNotification"
-      className="notification is-danger is-light has-text-weight-normal"
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: !errorMessage },
+      )}
     >
       <button
         data-cy="HideErrorButton"

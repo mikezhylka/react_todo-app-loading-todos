@@ -79,7 +79,13 @@ export const onEnterRenameTodo = async (
   }
 
   if (!query.trim()) {
-    setErrorMessage('Title should not be empty');
+    setLoadingTodo({ id: todo.id, action: 'removing' });
+    await todoService.deleteTodo(todo.id);
+
+    setInitialTodos(prev => prev.filter(t => t !== todo));
+    setRenderedTodos(prev => prev.filter(t => t !== todo));
+
+    setTimeout(() => setLoadingTodo(null), 900);
 
     return;
   }
