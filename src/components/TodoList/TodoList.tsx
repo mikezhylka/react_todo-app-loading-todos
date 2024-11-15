@@ -1,47 +1,49 @@
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { SetStateAction } from 'react';
 import { CustomError } from '../../types/Error';
+import { Filter } from '../../types/Filter';
 import { LoadingTodo } from '../../types/LoadingTodo';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from './TodoItem';
 
 type TodoListProps = {
-  renderedTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  initialTodos: Todo[];
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
   loadingTodo: LoadingTodo;
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
   loadingTodos: LoadingTodo[];
+  filter: Filter;
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
-  renderedTodos,
-  setRenderedTodos,
-  initialTodos,
-  setInitialTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   loadingTodo,
   setLoadingTodo,
   loadingTodos,
+  filter,
 }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') {
+      return !todo.completed;
+    }
 
-  useEffect(() => {
-    return renderedTodos !== initialTodos
-      ? setTodos(renderedTodos)
-      : setTodos(initialTodos);
-  }, [renderedTodos, initialTodos]);
+    if (filter === 'completed') {
+      return todo.completed;
+    }
+
+    return true;
+  });
 
   return (
     <section className="todoapp__todo-list" data-cy="TodoList">
-      {todos.map((todo, index) => (
+      {filteredTodos.map((todo, index) => (
         <TodoItem
           todo={todo}
-          setRenderedTodos={setRenderedTodos}
+          todos={todos}
+          setTodos={setTodos}
           key={index}
-          renderedTodos={renderedTodos}
-          setInitialTodos={setInitialTodos}
           setErrorMessage={setErrorMessage}
           loadingTodo={loadingTodo}
           setLoadingTodo={setLoadingTodo}

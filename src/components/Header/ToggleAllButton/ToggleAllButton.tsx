@@ -6,31 +6,28 @@ import { Todo } from '../../../types/Todo';
 import { toggleAllTodosCompletion } from '../../../utils/todoHandlers';
 
 type ToggleAllButtonProps = {
-  renderedTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
 };
 
 export const ToggleAllButton: React.FC<ToggleAllButtonProps> = ({
-  renderedTodos,
-  setRenderedTodos,
-  setInitialTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   setLoadingTodos,
 }) => (
   <button
     type="button"
     className={classNames('todoapp__toggle-all', {
-      active: renderedTodos.every(todo => todo.completed),
+      active: todos.every(todo => todo.completed),
     })}
     data-cy="ToggleAllButton"
     onClick={() => {
       toggleAllTodosCompletion(
-        renderedTodos,
-        setRenderedTodos,
-        setInitialTodos,
+        todos,
+        setTodos,
         setErrorMessage,
         setLoadingTodos,
       );

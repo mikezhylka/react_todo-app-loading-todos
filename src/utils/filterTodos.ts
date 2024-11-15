@@ -4,18 +4,17 @@ import { Todo } from '../types/Todo';
 
 export const filterTodos = (
   filterType: Filter,
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  initialTodos: Todo[],
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
 ) => {
   switch (filterType) {
     case 'active':
-      setRenderedTodos(initialTodos.filter(todo => !todo.completed));
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
       break;
     case 'completed':
-      setRenderedTodos(initialTodos.filter(todo => todo.completed));
+      setTodos(prevTodos => prevTodos.filter(todo => todo.completed));
       break;
     default:
-      setRenderedTodos(initialTodos);
+      setTodos(prevTodos => prevTodos);
       break;
   }
 };

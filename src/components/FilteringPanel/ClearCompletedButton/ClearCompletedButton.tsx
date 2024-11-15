@@ -5,17 +5,15 @@ import { Todo } from '../../../types/Todo';
 import { removeCompletedTodos } from '../../../utils/todoHandlers';
 
 type ClearCompletedButtonProps = {
-  initialTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
 };
 
 export const ClearCompletedButton: React.FC<ClearCompletedButtonProps> = ({
-  initialTodos,
-  setRenderedTodos,
-  setInitialTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   setLoadingTodos,
 }) => (
@@ -24,13 +22,7 @@ export const ClearCompletedButton: React.FC<ClearCompletedButtonProps> = ({
     className="todoapp__clear-completed"
     data-cy="ClearCompletedButton"
     onClick={() =>
-      removeCompletedTodos(
-        initialTodos,
-        setRenderedTodos,
-        setInitialTodos,
-        setErrorMessage,
-        setLoadingTodos,
-      )
+      removeCompletedTodos(todos, setTodos, setErrorMessage, setLoadingTodos)
     }
   >
     Clear completed

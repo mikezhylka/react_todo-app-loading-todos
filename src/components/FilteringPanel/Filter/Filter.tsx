@@ -1,20 +1,12 @@
 import classNames from 'classnames';
 import React, { SetStateAction, useState } from 'react';
 import { Filter as FilterType } from '../../../types/Filter';
-import { Todo } from '../../../types/Todo';
-import { filterTodos } from '../../../utils/filterTodos';
 
 type FilterProps = {
-  initialTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  renderedTodos: Todo[];
+  setFilter: React.Dispatch<SetStateAction<FilterType>>;
 };
 
-export const Filter: React.FC<FilterProps> = ({
-  initialTodos,
-  setRenderedTodos,
-  // renderedTodos,
-}) => {
+export const Filter: React.FC<FilterProps> = ({ setFilter }) => {
   const [selectedLink, setSelectedLink] = useState<FilterType>('all');
 
   return (
@@ -27,7 +19,7 @@ export const Filter: React.FC<FilterProps> = ({
         data-cy="FilterLinkAll"
         onClick={() => {
           setSelectedLink('all');
-          filterTodos('all', setRenderedTodos, initialTodos);
+          setFilter('all');
         }}
       >
         All
@@ -41,7 +33,7 @@ export const Filter: React.FC<FilterProps> = ({
         data-cy="FilterLinkActive"
         onClick={() => {
           setSelectedLink('active');
-          filterTodos('active', setRenderedTodos, initialTodos);
+          setFilter('active');
         }}
       >
         Active
@@ -55,7 +47,7 @@ export const Filter: React.FC<FilterProps> = ({
         data-cy="FilterLinkCompleted"
         onClick={() => {
           setSelectedLink('completed');
-          filterTodos('completed', setRenderedTodos, initialTodos);
+          setFilter('completed');
         }}
       >
         Completed

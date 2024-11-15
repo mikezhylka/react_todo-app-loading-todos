@@ -6,8 +6,7 @@ import { LoadingTodo } from '../types/LoadingTodo';
 import { Todo } from '../types/Todo';
 
 export const removeTodo = async (
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
   todoId: number,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
@@ -18,47 +17,45 @@ export const removeTodo = async (
 
     await todoService.deleteTodo(todoId);
 
-    setRenderedTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
-    setInitialTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
+    setTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
   } catch (error) {
     setErrorMessage('Unable to delete a todo');
   }
 };
 
 export const onEnterAddTodo = async (
-  event: React.KeyboardEvent<HTMLInputElement>,
   query: string,
   setQuery: React.Dispatch<SetStateAction<string>>,
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
+  setIsDisabled: React.Dispatch<SetStateAction<boolean>>,
 ) => {
-  if (event.key === 'Enter') {
-    if (!query.trim()) {
-      setErrorMessage('Title should not be empty');
+  if (!query.trim()) {
+    setErrorMessage('Title should not be empty');
 
-      return;
-    }
+    return;
+  }
 
-    const newTodo: Omit<Todo, 'id'> = {
-      userId: USER_ID,
-      title: query.trim(),
-      completed: false,
-    };
+  const newTodo: Omit<Todo, 'id'> = {
+    userId: USER_ID,
+    title: query.trim(),
+    completed: false,
+  };
 
-    try {
-      const createdTodo = await todoService.createTodo(newTodo);
+  try {
+    setIsDisabled(true);
+    const createdTodo = await todoService.createTodo(newTodo);
 
-      setLoadingTodo({ id: createdTodo.id, action: 'adding' });
-      setTimeout(() => setLoadingTodo(null), 900);
+    setLoadingTodo({ id: createdTodo.id, action: 'adding' });
+    setTimeout(() => setLoadingTodo(null), 900);
 
-      setRenderedTodos(prevTodos => [...prevTodos, createdTodo]);
-      setInitialTodos(prevTodos => [...prevTodos, createdTodo]);
-      setQuery('');
-    } catch (error) {
-      setErrorMessage('Unable to add a todo');
-    }
+    setTodos(prevTodos => [...prevTodos, createdTodo]);
+    setQuery('');
+  } catch (error) {
+    setErrorMessage('Unable to add a todo');
+  } finally {
+    setIsDisabled(false);
   }
 };
 
@@ -67,9 +64,8 @@ export const onEnterRenameTodo = async (
   event: React.KeyboardEvent<HTMLInputElement>,
   query: string,
   setQuery: React.Dispatch<SetStateAction<string>>,
-  initialTodos: Todo[],
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  todos: Todo[],
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setIsEdited: React.Dispatch<SetStateAction<boolean>>,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
@@ -82,8 +78,7 @@ export const onEnterRenameTodo = async (
     setLoadingTodo({ id: todo.id, action: 'removing' });
     await todoService.deleteTodo(todo.id);
 
-    setInitialTodos(prev => prev.filter(t => t !== todo));
-    setRenderedTodos(prev => prev.filter(t => t !== todo));
+    setTodos(prev => prev.filter(t => t !== todo));
 
     setTimeout(() => setLoadingTodo(null), 900);
 
@@ -95,17 +90,13 @@ export const onEnterRenameTodo = async (
   }
 
   const updatedTodo = { ...todo, title: query };
-  const todoIndex = initialTodos.findIndex(t => t === todo);
+  const todoIndex = todos.findIndex(t => t === todo);
 
   try {
     setLoadingTodo({ id: todo.id, action: 'updating' });
     await todoService.renameTodo(updatedTodo);
 
-    setInitialTodos(prev =>
-      prev.map((item, index) => (todoIndex === index ? updatedTodo : item)),
-    );
-
-    setRenderedTodos(prev =>
+    setTodos(prev =>
       prev.map((item, index) => (todoIndex === index ? updatedTodo : item)),
     );
 
@@ -120,8 +111,7 @@ export const onEnterRenameTodo = async (
 
 export const toggleTodoCompletion = async (
   id: number,
-  setRenderedTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setInitialTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<React.SetStateAction<CustomError>>,
   setLoadingTodo: React.Dispatch<React.SetStateAction<LoadingTodo>>,
 ) => {
@@ -141,8 +131,7 @@ export const toggleTodoCompletion = async (
         return todo;
       });
 
-    await setRenderedTodos(prevTodos => updateTodos(prevTodos));
-    await setInitialTodos(prevTodos => updateTodos(prevTodos));
+    await setTodos(prevTodos => updateTodos(prevTodos));
 
     if (changedTodo) {
       await todoService.changeCompletedStatus(changedTodo);
@@ -156,19 +145,18 @@ export const toggleTodoCompletion = async (
 };
 
 export const toggleAllTodosCompletion = async (
-  renderedTodos: Todo[],
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  todos: Todo[],
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>,
 ) => {
-  const completedTodoExists = renderedTodos.some(todo => todo.completed);
-  const uncompletedTodoExists = renderedTodos.some(todo => !todo.completed);
-  const allTodosCompleted = renderedTodos.every(todo => todo.completed);
+  const completedTodoExists = todos.some(todo => todo.completed);
+  const uncompletedTodoExists = todos.some(todo => !todo.completed);
+  const allTodosCompleted = todos.every(todo => todo.completed);
 
   try {
     if ((completedTodoExists && uncompletedTodoExists) || !allTodosCompleted) {
-      setRenderedTodos(prevTodos =>
+      setTodos(prevTodos =>
         prevTodos.map(todo => {
           const updatedTodo = { ...todo, completed: true };
 
@@ -184,13 +172,13 @@ export const toggleAllTodosCompletion = async (
         }),
       );
 
-      setInitialTodos(prevTodos =>
+      setTodos(prevTodos =>
         prevTodos.map(todo => {
           return { ...todo, completed: true };
         }),
       );
     } else {
-      setRenderedTodos(prevTodos =>
+      setTodos(prevTodos =>
         prevTodos.map(todo => {
           const updatedTodo = { ...todo, completed: false };
 
@@ -204,7 +192,7 @@ export const toggleAllTodosCompletion = async (
         }),
       );
 
-      setInitialTodos(prevTodos =>
+      setTodos(prevTodos =>
         prevTodos.map(todo => {
           return { ...todo, completed: false };
         }),
@@ -219,14 +207,13 @@ export const toggleAllTodosCompletion = async (
 };
 
 export const removeCompletedTodos = async (
-  initialTodos: Todo[],
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>,
+  todos: Todo[],
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>,
 ) => {
   try {
-    const completedTodos = initialTodos.filter(todo => todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
 
     await Promise.all(
       completedTodos.map(async todo => {
@@ -243,8 +230,7 @@ export const removeCompletedTodos = async (
       }),
     );
 
-    setRenderedTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-    setInitialTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
   } catch (error) {
     setErrorMessage('Unable to delete completed todos');
     setLoadingTodos([]);

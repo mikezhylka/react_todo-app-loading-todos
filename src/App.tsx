@@ -7,25 +7,22 @@ import { FilteringPanel } from './components/FilteringPanel';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { CustomError } from './types/Error';
+import { Filter } from './types/Filter';
 import { LoadingTodo } from './types/LoadingTodo';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
-  const [initialTodos, setInitialTodos] = useState<Todo[]>([]);
-  const [renderedTodos, setRenderedTodos] = useState<Todo[]>([]);
-  const [query, setQuery] = useState<string>(''); // for new todo title
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [query, setQuery] = useState(''); // for new todo title
   const [errorMessage, setErrorMessage] = useState<CustomError>('');
-
+  const [filter, setFilter] = useState<Filter>('all');
   const [loadingTodo, setLoadingTodo] = useState<LoadingTodo>(null);
   const [loadingTodos, setLoadingTodos] = useState<LoadingTodo[]>([]);
 
   useEffect(() => {
     getTodos()
-      .then(data => {
-        setRenderedTodos(data);
-        setInitialTodos(data);
-      })
+      .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
       });
@@ -41,35 +38,32 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          todos={todos}
+          setTodos={setTodos}
           query={query}
           setQuery={setQuery}
-          renderedTodos={renderedTodos}
-          setRenderedTodos={setRenderedTodos}
-          setInitialTodos={setInitialTodos}
           setErrorMessage={setErrorMessage}
           setLoadingTodo={setLoadingTodo}
           setLoadingTodos={setLoadingTodos}
         />
 
         <TodoList
-          renderedTodos={renderedTodos}
-          setRenderedTodos={setRenderedTodos}
-          initialTodos={initialTodos}
-          setInitialTodos={setInitialTodos}
+          todos={todos}
+          setTodos={setTodos}
           setErrorMessage={setErrorMessage}
           loadingTodo={loadingTodo}
           setLoadingTodo={setLoadingTodo}
           loadingTodos={loadingTodos}
+          filter={filter}
         />
 
-        {initialTodos.length > 0 && (
+        {todos.length > 0 && (
           <FilteringPanel
-            renderedTodos={renderedTodos}
-            setRenderedTodos={setRenderedTodos}
-            initialTodos={initialTodos}
-            setInitialTodos={setInitialTodos}
+            todos={todos}
+            setTodos={setTodos}
             setErrorMessage={setErrorMessage}
             setLoadingTodos={setLoadingTodos}
+            setFilter={setFilter}
           />
         )}
       </div>

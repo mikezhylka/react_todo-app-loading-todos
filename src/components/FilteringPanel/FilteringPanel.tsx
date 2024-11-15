@@ -1,41 +1,35 @@
 import React, { SetStateAction } from 'react';
 import { CustomError } from '../../types/Error';
+import { Filter as FilterType } from '../../types/Filter';
 import { LoadingTodo } from '../../types/LoadingTodo';
 import { Todo } from '../../types/Todo';
 import { ClearCompletedButton } from './ClearCompletedButton';
-import { Filter } from './Filter';
+import { Filter } from './Filter/Filter';
 import { TodosLeft } from './TodosLeft';
 
 type FilteringPanelProps = {
-  initialTodos: Todo[];
-  renderedTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
+  setFilter: React.Dispatch<SetStateAction<FilterType>>;
 };
 
 export const FilteringPanel: React.FC<FilteringPanelProps> = ({
-  initialTodos,
-  renderedTodos,
-  setRenderedTodos,
-  setInitialTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   setLoadingTodos,
+  setFilter,
 }) => (
   <footer className="todoapp__filtering-panel" data-cy="Footer">
-    <TodosLeft initialTodos={initialTodos} />
+    <TodosLeft todos={todos} />
 
-    <Filter
-      initialTodos={initialTodos}
-      setRenderedTodos={setRenderedTodos}
-      renderedTodos={renderedTodos}
-    />
+    <Filter setFilter={setFilter} />
 
     <ClearCompletedButton
-      initialTodos={initialTodos}
-      setRenderedTodos={setRenderedTodos}
-      setInitialTodos={setInitialTodos}
+      todos={todos}
+      setTodos={setTodos}
       setErrorMessage={setErrorMessage}
       setLoadingTodos={setLoadingTodos}
     />

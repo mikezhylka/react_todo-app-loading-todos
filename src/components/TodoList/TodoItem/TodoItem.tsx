@@ -12,27 +12,25 @@ import { removeTodo } from '../../../utils/todoHandlers';
 
 type TodoProps = {
   todo: Todo;
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  renderedTodos: Todo[];
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   loadingTodo: LoadingTodo;
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
   loadingTodos: LoadingTodo[];
+  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
 };
 
 export const TodoItem: React.FC<TodoProps> = ({
   todo,
-  setRenderedTodos,
-  setInitialTodos,
-  renderedTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   loadingTodo,
   setLoadingTodo,
   loadingTodos,
 }) => {
-  const [isEdited, setIsEdited] = useState<boolean>(false);
-  const [todoQuery, setTodoQuery] = useState<string>(todo.title);
+  const [isEdited, setIsEdited] = useState(false);
+  const [todoQuery, setTodoQuery] = useState(todo.title);
 
   return (
     <div
@@ -50,8 +48,7 @@ export const TodoItem: React.FC<TodoProps> = ({
         onChange={() =>
           toggleTodoCompletion(
             todo.id,
-            setRenderedTodos,
-            setInitialTodos,
+            setTodos,
             setErrorMessage,
             setLoadingTodo,
           )
@@ -79,9 +76,8 @@ export const TodoItem: React.FC<TodoProps> = ({
                 event,
                 todoQuery,
                 setTodoQuery,
-                renderedTodos,
-                setRenderedTodos,
-                setInitialTodos,
+                todos,
+                setTodos,
                 setIsEdited,
                 setErrorMessage,
                 setLoadingTodo,
@@ -103,13 +99,7 @@ export const TodoItem: React.FC<TodoProps> = ({
           className="todo__remove"
           data-cy="TodoDelete"
           onClick={() =>
-            removeTodo(
-              setRenderedTodos,
-              setInitialTodos,
-              todo.id,
-              setErrorMessage,
-              setLoadingTodo,
-            )
+            removeTodo(setTodos, todo.id, setErrorMessage, setLoadingTodo)
           }
         >
           ×

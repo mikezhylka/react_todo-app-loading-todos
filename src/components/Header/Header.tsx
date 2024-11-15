@@ -8,9 +8,8 @@ import { ToggleAllButton } from './ToggleAllButton';
 type HeaderProps = {
   query: string;
   setQuery: React.Dispatch<SetStateAction<string>>;
-  renderedTodos: Todo[];
-  setRenderedTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setInitialTodos: React.Dispatch<SetStateAction<Todo[]>>;
+  todos: Todo[];
+  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
   setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
   setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
@@ -19,9 +18,8 @@ type HeaderProps = {
 export const Header: React.FC<HeaderProps> = ({
   query,
   setQuery,
-  renderedTodos,
-  setRenderedTodos,
-  setInitialTodos,
+  todos,
+  setTodos,
   setErrorMessage,
   setLoadingTodo,
   setLoadingTodos,
@@ -29,9 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="todoapp__header">
       <ToggleAllButton
-        renderedTodos={renderedTodos}
-        setRenderedTodos={setRenderedTodos}
-        setInitialTodos={setInitialTodos}
+        todos={todos}
+        setTodos={setTodos}
         setErrorMessage={setErrorMessage}
         setLoadingTodos={setLoadingTodos}
       />
@@ -39,9 +36,8 @@ export const Header: React.FC<HeaderProps> = ({
       <TodoForm
         query={query}
         setQuery={setQuery}
-        renderedTodos={renderedTodos}
-        setRenderedTodos={setRenderedTodos}
-        setInitialTodos={setInitialTodos}
+        // todos={todos}
+        setTodos={setTodos}
         setErrorMessage={setErrorMessage}
         setLoadingTodo={setLoadingTodo}
       />
