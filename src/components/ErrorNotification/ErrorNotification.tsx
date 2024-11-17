@@ -1,18 +1,12 @@
 import classNames from 'classnames';
-import React, { SetStateAction } from 'react';
-import { CustomError } from '../../types/Error';
+import React from 'react';
+import { useAppContext } from '../../context/AppContext';
 
-type ErrorNotificationProps = {
-  errorMessage: CustomError;
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
-};
+export const ErrorNotification: React.FC = () => {
+  const { error, setError } = useAppContext();
 
-export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
-  errorMessage,
-  setErrorMessage,
-}) => {
   setInterval(() => {
-    setErrorMessage('');
+    setError('');
   }, 3000);
 
   return (
@@ -20,16 +14,16 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !errorMessage },
+        { hidden: !error },
       )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setErrorMessage('')}
+        onClick={() => setError('')}
       />
-      {errorMessage}
+      {error}
     </div>
   );
 };

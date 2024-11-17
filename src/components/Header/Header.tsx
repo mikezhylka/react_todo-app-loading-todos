@@ -1,46 +1,29 @@
-import React, { SetStateAction } from 'react';
-import { CustomError } from '../../types/Error';
-import { LoadingTodo } from '../../types/LoadingTodo';
-import { Todo } from '../../types/Todo';
+import classNames from 'classnames';
+import React from 'react';
+import { useAppContext } from '../../context/AppContext';
+import { useToggleAllTodosCompletion } from '../../utils/todoHandlers';
 import { TodoForm } from './TodoForm';
-import { ToggleAllButton } from './ToggleAllButton';
 
-type HeaderProps = {
-  query: string;
-  setQuery: React.Dispatch<SetStateAction<string>>;
-  todos: Todo[];
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>;
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>;
-  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>;
-  setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>;
-};
+export const Header: React.FC = () => {
+  const { todos } = useAppContext();
+  const toggleAllTodosCompletion = useToggleAllTodosCompletion();
 
-export const Header: React.FC<HeaderProps> = ({
-  query,
-  setQuery,
-  todos,
-  setTodos,
-  setErrorMessage,
-  setLoadingTodo,
-  setLoadingTodos,
-}) => {
+  function handleToggleAllTodosCompletion() {
+    toggleAllTodosCompletion();
+  }
+
   return (
     <header className="todoapp__header">
-      <ToggleAllButton
-        todos={todos}
-        setTodos={setTodos}
-        setErrorMessage={setErrorMessage}
-        setLoadingTodos={setLoadingTodos}
+      <button
+        type="button"
+        className={classNames('todoapp__toggle-all', {
+          active: todos.every(todo => todo.completed),
+        })}
+        data-cy="ToggleAllButton"
+        onClick={() => handleToggleAllTodosCompletion()}
       />
 
-      <TodoForm
-        query={query}
-        setQuery={setQuery}
-        // todos={todos}
-        setTodos={setTodos}
-        setErrorMessage={setErrorMessage}
-        setLoadingTodo={setLoadingTodo}
-      />
+      <TodoForm />
     </header>
   );
 };

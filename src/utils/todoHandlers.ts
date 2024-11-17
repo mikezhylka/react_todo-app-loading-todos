@@ -1,41 +1,41 @@
-import React, { SetStateAction } from 'react';
+// import { SetStateAction } from 'react';
+import { SetStateAction } from 'react';
 import { USER_ID } from '../api/todos';
+import { useAppContext } from '../context/AppContext';
 import * as todoService from '../services/todo';
-import { CustomError } from '../types/Error';
 import { LoadingTodo } from '../types/LoadingTodo';
 import { Todo } from '../types/Todo';
 
-export const removeTodo = async (
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  todoId: number,
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
-  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
-) => {
-  try {
-    setLoadingTodo({ id: todoId, action: 'removing' });
-    setTimeout(() => setLoadingTodo(null), 900);
+function showSpinner(setState: React.Dispatch<SetStateAction<LoadingTodo[]>>) {
+  setTimeout(() => setState([]), 900);
+}
 
-    await todoService.deleteTodo(todoId);
+export function useRemoveTodo() {
+  const { setTodos, setLoadingTodos, setError } = useAppContext();
 
-    setTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
-  } catch (error) {
-    setErrorMessage('Unable to delete a todo');
+  async function removeTodo(todoId: number) {
+    try {
+      setLoadingTodos(prev => [...prev, { id: todoId, action: 'removing' }]);
+      showSpinner(setLoadingTodos);
+      await todoService.deleteTodo(todoId);
+      setTodos(prevTodos => prevTodos.filter(item => item.id !== todoId));
+    } catch (error) {
+      setError('Unable to delete a todo');
+    }
   }
-};
 
-export const onEnterAddTodo = async (
-  query: string,
-  setQuery: React.Dispatch<SetStateAction<string>>,
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
-  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
-  setIsDisabled: React.Dispatch<SetStateAction<boolean>>,
-) => {
-  if (!query.trim()) {
-    setErrorMessage('Title should not be empty');
+  return removeTodo;
+}
 
-    return;
-  }
+export function useAddTodo() {
+  const {
+    query,
+    setQuery,
+    setIsFormDisabled,
+    setError,
+    setLoadingTodos,
+    setTodos,
+  } = useAppContext();
 
   const newTodo: Omit<Todo, 'id'> = {
     userId: USER_ID,
@@ -43,196 +43,199 @@ export const onEnterAddTodo = async (
     completed: false,
   };
 
-  try {
-    setIsDisabled(true);
-    const createdTodo = await todoService.createTodo(newTodo);
+  async function addTodo() {
+    if (!query.trim()) {
+      setError('Title should not be empty');
 
-    setLoadingTodo({ id: createdTodo.id, action: 'adding' });
-    setTimeout(() => setLoadingTodo(null), 900);
-
-    setTodos(prevTodos => [...prevTodos, createdTodo]);
-    setQuery('');
-  } catch (error) {
-    setErrorMessage('Unable to add a todo');
-  } finally {
-    setIsDisabled(false);
-  }
-};
-
-export const onEnterRenameTodo = async (
-  todo: Todo,
-  event: React.KeyboardEvent<HTMLInputElement>,
-  query: string,
-  setQuery: React.Dispatch<SetStateAction<string>>,
-  todos: Todo[],
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setIsEdited: React.Dispatch<SetStateAction<boolean>>,
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
-  setLoadingTodo: React.Dispatch<SetStateAction<LoadingTodo>>,
-) => {
-  if (event.key !== 'Enter') {
-    return;
-  }
-
-  if (!query.trim()) {
-    setLoadingTodo({ id: todo.id, action: 'removing' });
-    await todoService.deleteTodo(todo.id);
-
-    setTodos(prev => prev.filter(t => t !== todo));
-
-    setTimeout(() => setLoadingTodo(null), 900);
-
-    return;
-  }
-
-  if (setErrorMessage && query.trim()) {
-    setErrorMessage('');
-  }
-
-  const updatedTodo = { ...todo, title: query };
-  const todoIndex = todos.findIndex(t => t === todo);
-
-  try {
-    setLoadingTodo({ id: todo.id, action: 'updating' });
-    await todoService.renameTodo(updatedTodo);
-
-    setTodos(prev =>
-      prev.map((item, index) => (todoIndex === index ? updatedTodo : item)),
-    );
-
-    setQuery(updatedTodo.title);
-    setIsEdited(false);
-    setTimeout(() => setLoadingTodo(null), 900);
-  } catch (error) {
-    setErrorMessage('Unable to update a todo');
-    setLoadingTodo(null);
-  }
-};
-
-export const toggleTodoCompletion = async (
-  id: number,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setErrorMessage: React.Dispatch<React.SetStateAction<CustomError>>,
-  setLoadingTodo: React.Dispatch<React.SetStateAction<LoadingTodo>>,
-) => {
-  try {
-    setLoadingTodo({ id, action: 'updating' });
-
-    let changedTodo: Todo | null = null;
-
-    const updateTodos = (todos: Todo[]) =>
-      todos.map(todo => {
-        if (todo.id === id) {
-          changedTodo = { ...todo, completed: !todo.completed };
-
-          return changedTodo;
-        }
-
-        return todo;
-      });
-
-    await setTodos(prevTodos => updateTodos(prevTodos));
-
-    if (changedTodo) {
-      await todoService.changeCompletedStatus(changedTodo);
+      return;
     }
 
-    setTimeout(() => setLoadingTodo(null), 900);
-  } catch (error) {
-    setErrorMessage('Unable to update a todo');
-    setLoadingTodo(null);
+    try {
+      const createdTodo = await todoService.createTodo(newTodo);
+
+      setIsFormDisabled(true);
+      setLoadingTodos([{ id: createdTodo.id, action: 'adding' }]);
+      showSpinner(setLoadingTodos);
+      setTodos(prevTodos => [...prevTodos, createdTodo]);
+      setQuery('');
+    } catch (error) {
+      setError('Unable to add a todo');
+    } finally {
+      setIsFormDisabled(false);
+    }
   }
-};
 
-export const toggleAllTodosCompletion = async (
-  todos: Todo[],
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
-  setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>,
-) => {
-  const completedTodoExists = todos.some(todo => todo.completed);
-  const uncompletedTodoExists = todos.some(todo => !todo.completed);
-  const allTodosCompleted = todos.every(todo => todo.completed);
+  return addTodo;
+}
 
-  try {
-    if ((completedTodoExists && uncompletedTodoExists) || !allTodosCompleted) {
-      setTodos(prevTodos =>
-        prevTodos.map(todo => {
-          const updatedTodo = { ...todo, completed: true };
+export function useRenameTodo(
+  todoQuery: string,
+  setTodoQuery: React.Dispatch<SetStateAction<string>>,
+  setIsTodoEdited: React.Dispatch<SetStateAction<boolean>>,
+) {
+  const { setTodos, setError, setIsNewTodoFieldEdited, setLoadingTodos } =
+    useAppContext();
 
-          if (!todo.completed) {
+  const isInputEmpty = !todoQuery.trim();
+
+  async function renameTodo(todo: Todo, e: React.KeyboardEvent) {
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    if (isInputEmpty) {
+      setLoadingTodos(prev => [...prev, { id: todo.id, action: 'removing' }]);
+      await todoService.deleteTodo(todo.id);
+      showSpinner(setLoadingTodos);
+      await setTodos(prevTodos =>
+        prevTodos.filter(prevTodo => prevTodo !== todo),
+      );
+
+      return;
+    } else {
+      setError('');
+    }
+
+    const updatedTodo = { ...todo, title: todoQuery };
+
+    try {
+      setLoadingTodos(prev => [...prev, { id: todo.id, action: 'updating' }]);
+      showSpinner(setLoadingTodos);
+      await todoService.renameTodo(updatedTodo);
+      setTodos(prev =>
+        prev.map(item => (item.id === todo.id ? updatedTodo : item)),
+      );
+      setTodoQuery(updatedTodo.title);
+      setIsNewTodoFieldEdited(false);
+    } catch (error) {
+      setError('Unable to update a todo');
+      setLoadingTodos([]);
+    } finally {
+      setIsTodoEdited(false);
+    }
+  }
+
+  return renameTodo;
+}
+
+export function useToggleTodoCompletion() {
+  const { setTodos, setLoadingTodos, setError } = useAppContext();
+
+  async function ToggleTodoCompletion(id: number) {
+    try {
+      let newTodo: Todo | null = null;
+      const updateTodos = (todos: Todo[]) =>
+        todos.map(todo => {
+          if (todo.id === id) {
+            newTodo = { ...todo, completed: !todo.completed };
+
+            return newTodo;
+          }
+
+          return todo;
+        });
+
+      setLoadingTodos(prev => [...prev, { id, action: 'updating' }]);
+      showSpinner(setLoadingTodos);
+      await setTodos(prevTodos => updateTodos(prevTodos));
+
+      if (newTodo) {
+        await todoService.changeCompletedStatus(newTodo);
+      }
+    } catch (error) {
+      setError('Unable to update a todo');
+      setLoadingTodos([]);
+    }
+  }
+
+  return ToggleTodoCompletion;
+}
+
+export function useToggleAllTodosCompletion() {
+  const { todos, setTodos, setLoadingTodos, setError } = useAppContext();
+
+  const hasUncompletedTodo = todos.some(todo => !todo.completed);
+  const isAllCompleted = todos.every(todo => todo.completed);
+  const shouldToggleAllToCompleted = hasUncompletedTodo || !isAllCompleted;
+
+  async function toggleAllTodosCompletion() {
+    try {
+      if (shouldToggleAllToCompleted) {
+        setTodos(prevTodos =>
+          prevTodos.map(todo => {
+            const updatedTodo = { ...todo, completed: true };
+
+            if (!todo.completed) {
+              setLoadingTodos(prev => [
+                ...prev,
+                { id: updatedTodo.id, action: 'updating' },
+              ]);
+              todoService.changeCompletedStatus(updatedTodo);
+            }
+
+            return updatedTodo;
+          }),
+        );
+      } else {
+        setTodos(prevTodos =>
+          prevTodos.map(todo => {
+            const updatedTodo = { ...todo, completed: false };
+
             setLoadingTodos(prev => [
               ...prev,
               { id: updatedTodo.id, action: 'updating' },
             ]);
             todoService.changeCompletedStatus(updatedTodo);
-          }
 
-          return updatedTodo;
-        }),
-      );
+            return updatedTodo;
+          }),
+        );
+      }
 
-      setTodos(prevTodos =>
-        prevTodos.map(todo => {
-          return { ...todo, completed: true };
-        }),
-      );
-    } else {
-      setTodos(prevTodos =>
-        prevTodos.map(todo => {
-          const updatedTodo = { ...todo, completed: false };
+      showSpinner(setLoadingTodos);
+    } catch (error) {
+      setError('Unable to update todos');
+      setLoadingTodos([]);
+    }
+  }
 
+  return toggleAllTodosCompletion;
+}
+
+export function useRemoveCompletedTodos() {
+  const { todos, setLoadingTodos, setError, inputRef, setTodos } =
+    useAppContext();
+
+  async function removeCompletedTodos() {
+    try {
+      const completedTodos = todos.filter(todo => todo.completed);
+
+      await Promise.all(
+        completedTodos.map(async todo => {
           setLoadingTodos(prev => [
             ...prev,
-            { id: updatedTodo.id, action: 'updating' },
+            { id: todo.id, action: 'removing' },
           ]);
-          todoService.changeCompletedStatus(updatedTodo);
+          try {
+            await todoService.deleteTodo(todo.id);
+          } catch (error) {
+            setError('Unable to delete a todo');
+          } finally {
+            setLoadingTodos(prev =>
+              prev.filter(loadingTodo => loadingTodo?.id !== todo.id),
+            );
 
-          return updatedTodo;
+            return inputRef.current && inputRef.current.focus();
+          }
         }),
       );
 
-      setTodos(prevTodos =>
-        prevTodos.map(todo => {
-          return { ...todo, completed: false };
-        }),
-      );
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    } catch (error) {
+      setError('Unable to delete a todo');
+      setLoadingTodos([]);
     }
-
-    setTimeout(() => setLoadingTodos([]), 900);
-  } catch (error) {
-    setErrorMessage('Unable to update todos');
-    setLoadingTodos([]);
   }
-};
 
-export const removeCompletedTodos = async (
-  todos: Todo[],
-  setTodos: React.Dispatch<SetStateAction<Todo[]>>,
-  setErrorMessage: React.Dispatch<SetStateAction<CustomError>>,
-  setLoadingTodos: React.Dispatch<SetStateAction<LoadingTodo[]>>,
-) => {
-  try {
-    const completedTodos = todos.filter(todo => todo.completed);
-
-    await Promise.all(
-      completedTodos.map(async todo => {
-        setLoadingTodos(prev => [...prev, { id: todo.id, action: 'removing' }]);
-        try {
-          await todoService.deleteTodo(todo.id);
-        } catch (error) {
-          setErrorMessage('Unable to delete completed todos');
-        } finally {
-          setLoadingTodos(prev =>
-            prev.filter(loadingTodo => loadingTodo?.id !== todo.id),
-          );
-        }
-      }),
-    );
-
-    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-  } catch (error) {
-    setErrorMessage('Unable to delete completed todos');
-    setLoadingTodos([]);
-  }
-};
+  return removeCompletedTodos;
+}

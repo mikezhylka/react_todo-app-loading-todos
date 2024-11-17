@@ -5,5 +5,4 @@ export type CustomError =
   | 'Unable to delete a todo'
   | 'Unable to update a todo'
   | 'Unable to update todos'
-  | 'Unable to delete completed todos'
   | '';
