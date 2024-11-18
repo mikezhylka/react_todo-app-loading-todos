@@ -12,6 +12,7 @@ import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
   const { todos, setTodos, setError } = useAppContext();
+  const shouldShowTodos = todos.length > 0;
 
   useEffect(() => {
     getTodos()
@@ -30,8 +31,12 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todo</h1>
       <div className="todoapp__content">
         <Header />
-        <TodoList />
-        {todos.length > 0 && <FilteringPanel />}
+        {shouldShowTodos && (
+          <>
+            <TodoList />
+            <FilteringPanel />
+          </>
+        )}
       </div>
       <ErrorNotification />
     </div>

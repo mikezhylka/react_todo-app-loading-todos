@@ -5,6 +5,10 @@ import { useAppContext } from '../../context/AppContext';
 export const ErrorNotification: React.FC = () => {
   const { error, setError } = useAppContext();
 
+  function handleHideError() {
+    setError('');
+  }
+
   setInterval(() => {
     setError('');
   }, 3000);
@@ -21,7 +25,7 @@ export const ErrorNotification: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError('')}
+        onClick={handleHideError}
       />
       {error}
     </div>

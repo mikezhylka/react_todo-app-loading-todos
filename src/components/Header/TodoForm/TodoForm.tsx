@@ -10,6 +10,10 @@ export const TodoForm: React.FC = () => {
     addTodo();
   }
 
+  function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setQuery(event.target.value);
+  }
+
   useEffect(() => {
     if (!isFormDisabled && inputRef.current) {
       inputRef.current.focus();
@@ -31,7 +35,7 @@ export const TodoForm: React.FC = () => {
         ref={inputRef}
         placeholder="What needs to be done?"
         value={query}
-        onChange={event => setQuery(event.target.value)}
+        onChange={event => handleQueryChange(event)}
         autoFocus
         disabled={isFormDisabled}
       />

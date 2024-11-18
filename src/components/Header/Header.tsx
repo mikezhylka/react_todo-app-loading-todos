@@ -7,6 +7,7 @@ import { TodoForm } from './TodoForm';
 export const Header: React.FC = () => {
   const { todos } = useAppContext();
   const toggleAllTodosCompletion = useToggleAllTodosCompletion();
+  const isEveryTodoCompleted = todos.every(todo => todo.completed);
 
   function handleToggleAllTodosCompletion() {
     toggleAllTodosCompletion();
@@ -17,10 +18,10 @@ export const Header: React.FC = () => {
       <button
         type="button"
         className={classNames('todoapp__toggle-all', {
-          active: todos.every(todo => todo.completed),
+          active: isEveryTodoCompleted,
         })}
         data-cy="ToggleAllButton"
-        onClick={() => handleToggleAllTodosCompletion()}
+        onClick={handleToggleAllTodosCompletion}
       />
 
       <TodoForm />
